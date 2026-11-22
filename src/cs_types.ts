@@ -29,7 +29,7 @@ export type Cs_PaymentStatus = "unpaid" | "paid";
 
 /* ---------- collections ---------- */
 
-// BetterAuth's `user` collection (= our users collection)
+// BetterAuth `user` collection
 export interface Cs_User {
   _id: ObjectId;
   name: string;

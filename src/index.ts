@@ -4,9 +4,7 @@ import { cs_connectDb } from "./config/cs_db";
 
 const cs_port = Number(process.env.PORT) || 5000;
 
-// On Vercel the app is exported and run as a serverless function
-// (the DB connects lazily on the first query);
-// locally we connect first, then start a normal HTTP server.
+// Local: connect DB then listen. Vercel: export only
 if (!process.env.VERCEL) {
   cs_connectDb()
     .then(() => {

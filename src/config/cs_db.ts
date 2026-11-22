@@ -1,7 +1,7 @@
 import { Db, MongoClient } from "mongodb";
 import type { Cs_Booking, Cs_Payment, Cs_Service, Cs_User } from "../cs_types";
 
-// Collection names are fixed by the data design (BetterAuth owns `user`).
+// `user` is BetterAuth's collection
 export const CS_COLLECTIONS = {
   users: "user",
   services: "services",
@@ -9,8 +9,7 @@ export const CS_COLLECTIONS = {
   payments: "payments",
 } as const;
 
-// Cache the connection on globalThis so serverless invocations (Vercel)
-// and hot reloads reuse one client instead of opening a new pool each time.
+// Reuse one connection across serverless calls
 const cs_globalCache = globalThis as typeof globalThis & {
   cs_dbPromise?: Promise<Db>;
 };
@@ -56,7 +55,7 @@ const cs_createConnection = async (): Promise<Db> => {
 export const cs_connectDb = (): Promise<Db> => {
   if (!cs_globalCache.cs_dbPromise) {
     cs_globalCache.cs_dbPromise = cs_createConnection().catch((cs_error) => {
-      // Reset so the next request can retry instead of reusing a failed promise.
+      // Allow retry on next call
       cs_globalCache.cs_dbPromise = undefined;
       throw cs_error;
     });

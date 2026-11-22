@@ -25,3 +25,22 @@ export const CS_ACTIVE_BOOKING_STATUSES: readonly Cs_BookingStatus[] = ["request
 // Booking dates are checked in Dhaka time
 export const CS_TIMEZONE = "Asia/Dhaka";
 export const CS_BOOKING_MAX_DAYS_AHEAD = 90;
+
+export const CS_BOOKING_STATUSES: readonly Cs_BookingStatus[] = [
+  "requested",
+  "accepted",
+  "rejected",
+  "in-progress",
+  "completed",
+  "cancelled",
+];
+
+// The only moves a technician can make (customer cancel is separate)
+export const CS_ALLOWED_TRANSITIONS: Partial<Record<Cs_BookingStatus, readonly Cs_BookingStatus[]>> = {
+  requested: ["accepted", "rejected"],
+  accepted: ["in-progress"],
+  "in-progress": ["completed"],
+};
+
+export const CS_MIN_FINAL_AMOUNT = 0.5;
+export const CS_MAX_FINAL_AMOUNT = 100000;

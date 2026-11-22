@@ -9,6 +9,7 @@ import cs_serviceRouter from "./routes/cs_serviceRoutes";
 import cs_statsRouter from "./routes/cs_statsRoutes";
 import cs_technicianRouter from "./routes/cs_technicianRoutes";
 import cs_uploadRouter from "./routes/cs_uploadRoutes";
+import cs_userRouter from "./routes/cs_userRoutes";
 
 const cs_app = express();
 
@@ -26,6 +27,7 @@ cs_app.use("/api/bookings", cs_bookingRouter);
 cs_app.use("/api/stats", cs_statsRouter);
 cs_app.use("/api/admin", cs_adminRouter);
 cs_app.use("/api/upload", cs_uploadRouter);
+cs_app.use("/api/users", cs_userRouter);
 
 // Keep last
 cs_app.use(cs_notFoundHandler);

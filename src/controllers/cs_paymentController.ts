@@ -1,8 +1,10 @@
 import type { RequestHandler } from "express";
-import { cs_bookingsCollection } from "../config/cs_db";
+import Stripe from "stripe";
+import { cs_bookingsCollection, cs_paymentsCollection } from "../config/cs_db";
 import { cs_getStripe } from "../config/cs_stripe";
 import { Cs_AppError } from "../utils/cs_appError";
-import { cs_toObjectId } from "../utils/cs_query";
+import { cs_fulfillPayment } from "../utils/cs_fulfillPayment";
+import { cs_queryString, cs_toObjectId } from "../utils/cs_query";
 import { cs_getAuthUser } from "../utils/cs_request";
 
 const CS_MIN_CHARGE_CENTS = 50;
@@ -54,4 +56,36 @@ export const cs_createCheckoutSession: RequestHandler = async (req, res) => {
 
   if (!cs_session.url) throw new Error("Stripe did not return a checkout URL");
   res.status(201).json({ success: true, url: cs_session.url, sessionId: cs_session.id });
+};
+
+// GET /api/payments/verify?session_id= (customer, after the Stripe redirect)
+export const cs_verifyCheckoutSession: RequestHandler = async (req, res) => {
+  const cs_user = cs_getAuthUser(req);
+  const cs_sessionId = cs_queryString(req.query.session_id);
+  if (!/^cs_[A-Za-z0-9_]+$/.test(cs_sessionId)) throw new Cs_AppError(400, "A valid session_id is required");
+
+  let cs_session: Stripe.Checkout.Session;
+  try {
+    cs_session = await cs_getStripe().checkout.sessions.retrieve(cs_sessionId);
+  } catch (cs_error) {
+    if (cs_error instanceof Stripe.errors.StripeInvalidRequestError) throw new Cs_AppError(404, "Payment session not found");
+    throw cs_error;
+  }
+
+  // Someone else's session looks like a missing one
+  if (cs_session.metadata?.customerEmail !== cs_user.email) throw new Cs_AppError(404, "Payment session not found");
+
+  const { payment: cs_payment, alreadyRecorded: cs_alreadyRecorded } = await cs_fulfillPayment(cs_session);
+  res.json({ success: true, alreadyRecorded: cs_alreadyRecorded, payment: cs_payment });
+};
+
+// GET /api/payments/my (customer)
+export const cs_getMyPayments: RequestHandler = async (req, res) => {
+  const cs_user = cs_getAuthUser(req);
+  const cs_items = await (await cs_paymentsCollection())
+    .find({ customerEmail: cs_user.email })
+    .sort({ paidAt: -1, _id: -1 })
+    .toArray();
+  const cs_total = cs_items.reduce((cs_sum, cs_payment) => cs_sum + cs_payment.amount, 0);
+  res.json({ success: true, items: cs_items, totalSpent: Math.round(cs_total * 100) / 100 });
 };

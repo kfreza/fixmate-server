@@ -1,3 +1,4 @@
+import dns from "node:dns";
 import { Db, MongoClient } from "mongodb";
 import type { Cs_Booking, Cs_Payment, Cs_Service, Cs_User } from "../cs_types";
 
@@ -8,6 +9,12 @@ export const CS_COLLECTIONS = {
   bookings: "bookings",
   payments: "payments",
 } as const;
+
+// Runs only locally
+if (!process.env.VERCEL) {
+  dns.setServers(["8.8.8.8", "8.8.4.4"]);
+  dns.promises.setServers(["8.8.8.8", "8.8.4.4"]);
+}
 
 // Reuse one connection across serverless calls
 const cs_globalCache = globalThis as typeof globalThis & {

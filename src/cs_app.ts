@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { cs_corsOptions } from "./config/cs_cors";
+import { cs_handleStripeWebhook } from "./controllers/cs_webhookController";
 import { cs_errorHandler, cs_notFoundHandler } from "./middlewares/cs_errorHandler";
 import cs_adminRouter from "./routes/cs_adminRoutes";
 import cs_bookingRouter from "./routes/cs_bookingRoutes";
@@ -15,6 +16,10 @@ import cs_userRouter from "./routes/cs_userRoutes";
 const cs_app = express();
 
 cs_app.use(cors(cs_corsOptions));
+
+// Before express.json(): Stripe signs the exact raw bytes
+cs_app.post("/api/payments/webhook", express.raw({ type: "application/json", limit: "1mb" }), cs_handleStripeWebhook);
+
 cs_app.use(express.json());
 
 cs_app.get("/", (_req, res) => {

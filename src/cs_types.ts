@@ -104,6 +104,7 @@ export interface Cs_Booking {
   statusHistory: Cs_StatusHistoryItem[];
   rating?: number;
   review?: string;
+  reviewedAt?: Date;
   createdAt: Date;
 }
 

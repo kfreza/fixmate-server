@@ -6,6 +6,7 @@ import {
   cs_toggleAvailability,
   cs_updateService,
 } from "../controllers/cs_technicianServiceController";
+import { cs_getServiceReviews } from "../controllers/cs_reviewController";
 import { verifyTechnician, verifyToken } from "../middlewares/cs_authMiddleware";
 
 const cs_serviceRouter = Router();
@@ -14,6 +15,7 @@ const cs_serviceRouter = Router();
 cs_serviceRouter.get("/", cs_getServices);
 cs_serviceRouter.get("/featured", cs_getFeaturedServices);
 cs_serviceRouter.get("/:id", cs_getServiceById);
+cs_serviceRouter.get("/:id/reviews", cs_getServiceReviews);
 
 // Technician (owner checks in the controller)
 cs_serviceRouter.post("/", verifyToken, verifyTechnician, cs_createService);

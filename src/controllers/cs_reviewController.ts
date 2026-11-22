@@ -10,7 +10,7 @@ const CS_REVIEW_MAX = 500;
 const CS_REVIEWS_LIMIT = 10;
 
 // Recount from the bookings, so the average can never drift
-const cs_refreshServiceRating = async (cs_serviceId: string) => {
+export const cs_refreshServiceRating = async (cs_serviceId: string) => {
   if (!ObjectId.isValid(cs_serviceId)) return;
   const [cs_result] = await (await cs_bookingsCollection())
     .aggregate<{ avg: number; count: number }>([

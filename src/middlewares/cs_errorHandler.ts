@@ -1,4 +1,5 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
+import { MulterError } from "multer";
 import { Cs_AppError } from "../utils/cs_appError";
 
 // Unknown route → 404 JSON
@@ -14,6 +15,9 @@ export const cs_errorHandler: ErrorRequestHandler = (cs_error, _req, res, _next)
   if (cs_error instanceof Cs_AppError) {
     cs_statusCode = cs_error.cs_statusCode;
     cs_message = cs_error.message;
+  } else if (cs_error instanceof MulterError) {
+    cs_statusCode = 400;
+    cs_message = cs_error.code === "LIMIT_FILE_SIZE" ? "Image must be 2 MB or smaller" : cs_error.message;
   } else if (cs_error?.type === "entity.parse.failed") {
     cs_statusCode = 400;
     cs_message = "Invalid JSON in request body";

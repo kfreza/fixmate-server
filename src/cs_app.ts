@@ -2,9 +2,11 @@ import express from "express";
 import cors from "cors";
 import { cs_corsOptions } from "./config/cs_cors";
 import { cs_errorHandler, cs_notFoundHandler } from "./middlewares/cs_errorHandler";
+import cs_adminRouter from "./routes/cs_adminRoutes";
 import cs_bookingRouter from "./routes/cs_bookingRoutes";
 import cs_healthRouter from "./routes/cs_healthRoutes";
 import cs_serviceRouter from "./routes/cs_serviceRoutes";
+import cs_statsRouter from "./routes/cs_statsRoutes";
 import cs_technicianRouter from "./routes/cs_technicianRoutes";
 import cs_uploadRouter from "./routes/cs_uploadRoutes";
 
@@ -21,6 +23,8 @@ cs_app.use("/api/health", cs_healthRouter);
 cs_app.use("/api/services", cs_serviceRouter);
 cs_app.use("/api/technician", cs_technicianRouter);
 cs_app.use("/api/bookings", cs_bookingRouter);
+cs_app.use("/api/stats", cs_statsRouter);
+cs_app.use("/api/admin", cs_adminRouter);
 cs_app.use("/api/upload", cs_uploadRouter);
 
 // Keep last

@@ -44,6 +44,20 @@ export interface Cs_User {
   updatedAt: Date;
 }
 
+// Logged-in user attached to req by verifyToken
+export interface Cs_AuthUser {
+  _id: string;
+  name: string;
+  email: string;
+  image?: string | null;
+  role: Cs_Role;
+}
+
+// JWT payload signed by the client (/api/token)
+export interface Cs_TokenPayload {
+  email: string;
+}
+
 export interface Cs_Service {
   _id?: ObjectId;
   title: string;

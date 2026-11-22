@@ -21,3 +21,7 @@ export const CS_FEATURED_LIMIT = 6;
 
 // Bookings that still block a delete or a duplicate request
 export const CS_ACTIVE_BOOKING_STATUSES: readonly Cs_BookingStatus[] = ["requested", "accepted", "in-progress"];
+
+// Booking dates are checked in Dhaka time
+export const CS_TIMEZONE = "Asia/Dhaka";
+export const CS_BOOKING_MAX_DAYS_AHEAD = 90;

@@ -1,5 +1,6 @@
 import dns from "node:dns";
 import { Db, MongoClient } from "mongodb";
+import { CS_ACTIVE_BOOKING_STATUSES } from "../utils/cs_constants";
 import type { Cs_Booking, Cs_Payment, Cs_Service, Cs_User } from "../cs_types";
 
 // `user` is BetterAuth's collection
@@ -35,6 +36,13 @@ const cs_ensureIndexes = async (cs_db: Db) => {
         { key: { customerEmail: 1 } },
         { key: { technicianEmail: 1, status: 1 } },
         { key: { serviceId: 1, customerEmail: 1, status: 1 } },
+        // One active booking per customer per service, even under races
+        {
+          key: { serviceId: 1, customerEmail: 1 },
+          name: "cs_one_active_booking",
+          unique: true,
+          partialFilterExpression: { status: { $in: [...CS_ACTIVE_BOOKING_STATUSES] } },
+        },
       ]),
     cs_db
       .collection(CS_COLLECTIONS.payments)

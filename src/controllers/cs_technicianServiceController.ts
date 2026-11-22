@@ -4,17 +4,12 @@ import type { Cs_Service } from "../cs_types";
 import { Cs_AppError } from "../utils/cs_appError";
 import { CS_ACTIVE_BOOKING_STATUSES } from "../utils/cs_constants";
 import { cs_toObjectId } from "../utils/cs_query";
+import { cs_getAuthUser } from "../utils/cs_request";
 import { cs_validateServiceInput, type Cs_ServiceInput } from "../validators/cs_serviceValidator";
-
-// Logged-in technician (set by verifyToken)
-const cs_getUser = (req: Request) => {
-  if (!req.cs_user) throw new Cs_AppError(401, "Unauthorized");
-  return req.cs_user;
-};
 
 // 404 if missing, 403 if someone else's
 const cs_findOwnedService = async (req: Request) => {
-  const cs_user = cs_getUser(req);
+  const cs_user = cs_getAuthUser(req);
   const cs_serviceId = cs_toObjectId(req.params.id, "Service not found");
   const cs_service = await (await cs_servicesCollection()).findOne({ _id: cs_serviceId });
   if (!cs_service) throw new Cs_AppError(404, "Service not found");
@@ -26,7 +21,7 @@ const cs_findOwnedService = async (req: Request) => {
 
 // POST /api/services
 export const cs_createService: RequestHandler = async (req, res) => {
-  const cs_user = cs_getUser(req);
+  const cs_user = cs_getAuthUser(req);
   const cs_input = cs_validateServiceInput(req.body) as Cs_ServiceInput;
 
   const cs_service: Cs_Service = {
@@ -48,7 +43,7 @@ export const cs_createService: RequestHandler = async (req, res) => {
 
 // GET /api/technician/services
 export const cs_getMyServices: RequestHandler = async (req, res) => {
-  const cs_user = cs_getUser(req);
+  const cs_user = cs_getAuthUser(req);
   const cs_items = await (await cs_servicesCollection())
     .find({ technicianEmail: cs_user.email })
     .sort({ createdAt: -1, _id: -1 })

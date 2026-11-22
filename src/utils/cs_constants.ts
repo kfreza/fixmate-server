@@ -1,4 +1,4 @@
-import type { Cs_ServiceCategory, Cs_ServiceMode } from "../cs_types";
+import type { Cs_BookingStatus, Cs_ServiceCategory, Cs_ServiceMode } from "../cs_types";
 
 export const CS_CATEGORIES: readonly Cs_ServiceCategory[] = [
   "Smartphone",
@@ -18,3 +18,6 @@ export const CS_PUBLIC_SERVICE_FILTER = { approvalStatus: "approved", isAvailabl
 export const CS_PAGE_LIMIT_DEFAULT = 9;
 export const CS_PAGE_LIMIT_MAX = 24;
 export const CS_FEATURED_LIMIT = 6;
+
+// Bookings that still block a delete or a duplicate request
+export const CS_ACTIVE_BOOKING_STATUSES: readonly Cs_BookingStatus[] = ["requested", "accepted", "in-progress"];

@@ -75,6 +75,7 @@ export interface Cs_Service {
   avgRating?: number;
   reviewCount?: number;
   createdAt: Date;
+  updatedAt?: Date;
 }
 
 export interface Cs_StatusHistoryItem {

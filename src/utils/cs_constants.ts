@@ -44,3 +44,6 @@ export const CS_ALLOWED_TRANSITIONS: Partial<Record<Cs_BookingStatus, readonly C
 
 export const CS_MIN_FINAL_AMOUNT = 0.5;
 export const CS_MAX_FINAL_AMOUNT = 100000;
+
+// Must match images.remotePatterns in fixmate-client/next.config.ts
+export const CS_IMAGE_HOSTS: readonly string[] = ["i.ibb.co", "images.unsplash.com"];

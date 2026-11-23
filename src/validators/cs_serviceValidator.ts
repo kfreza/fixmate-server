@@ -1,6 +1,6 @@
 import type { Cs_Service } from "../cs_types";
 import { Cs_AppError } from "../utils/cs_appError";
-import { CS_CATEGORIES, CS_SERVICE_MODES } from "../utils/cs_constants";
+import { CS_CATEGORIES, CS_IMAGE_HOSTS, CS_SERVICE_MODES } from "../utils/cs_constants";
 
 export type Cs_ServiceInput = Pick<
   Cs_Service,
@@ -8,6 +8,17 @@ export type Cs_ServiceInput = Pick<
 >;
 
 type Cs_FieldRule = (cs_value: unknown) => string | null;
+
+// Only hosts the client's next/image can render; anything else would break its pages
+const cs_isAllowedImageUrl = (cs_value: unknown) => {
+  if (typeof cs_value !== "string" || cs_value.length > 500) return false;
+  try {
+    const cs_url = new URL(cs_value.trim());
+    return cs_url.protocol === "https:" && CS_IMAGE_HOSTS.includes(cs_url.hostname) && !cs_url.username && !cs_url.port;
+  } catch {
+    return false;
+  }
+};
 
 const cs_text =
   (cs_label: string, cs_min: number, cs_max: number): Cs_FieldRule =>
@@ -28,8 +39,7 @@ const CS_SERVICE_RULES: Record<keyof Cs_ServiceInput, Cs_FieldRule> = {
   title: cs_text("Title", 3, 100),
   category: cs_oneOf("Category", CS_CATEGORIES),
   description: cs_text("Description", 20, 2000),
-  image: (cs_value) =>
-    typeof cs_value === "string" && /^https?:\/\/\S+$/i.test(cs_value.trim()) ? null : "Image must be a valid URL",
+  image: (cs_value) => (cs_isAllowedImageUrl(cs_value) ? null : "Image must be uploaded through FixMate (ImgBB)"),
   basePrice: (cs_value) =>
     typeof cs_value === "number" && Number.isFinite(cs_value) && cs_value > 0 && cs_value <= 100000
       ? null

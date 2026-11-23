@@ -2,8 +2,8 @@
 
 REST API for **FixMate**, a repair service platform where customers book verified technicians for phones, laptops and home appliances, follow every job step by step, and pay online only after the work is done.
 
-- **Live API:** `https://<your-server>.vercel.app` (add after deploy)
-- **Client app:** see the `fixmate-client` repository
+- **Live API:** https://fixmate-server-ruby.vercel.app ([health check](https://fixmate-server-ruby.vercel.app/api/health))
+- **Client app:** https://fixmate-client-six.vercel.app (see the `fixmate-client` repository)
 
 ## Tech stack
 
@@ -138,7 +138,7 @@ Errors always return `{ success: false, message }` with the matching status code
 1. Import the repository in Vercel. `vercel.json` builds `src/index.ts` with `@vercel/node` and routes every path to it.
 2. Add every variable from `.env.example` except `PORT`, using production values. Set `CS_CLIENT_URL` and `CS_CORS_ORIGINS` to the deployed client URL.
 3. Also add `NODEJS_HELPERS=0` for every environment. This turns off Vercel's Node.js request helpers ([Vercel docs](https://vercel.com/docs/functions/runtimes/node-js/advanced-node-configuration)), so `express.raw()` on the webhook route reads the original bytes that Stripe signed.
-4. In the Stripe Dashboard, add a webhook endpoint at `https://<your-server>.vercel.app/api/payments/webhook` for `checkout.session.completed` and `checkout.session.async_payment_succeeded`. Copy its signing secret into `CS_STRIPE_WEBHOOK_SECRET` and redeploy.
+4. In the Stripe Dashboard, add a webhook endpoint at `https://fixmate-server-ruby.vercel.app/api/payments/webhook` for `checkout.session.completed` and `checkout.session.async_payment_succeeded`. Copy its signing secret into `CS_STRIPE_WEBHOOK_SECRET` and redeploy.
 5. Open `/api/health`; it should report `"database": "connected"`.
 6. Make one test payment, then check the webhook's delivery log in Stripe. A `200` means it works. A `400` with "Missing Stripe signature or raw body" means the body was parsed before Express saw it; recheck step 3. A `400` with "Invalid Stripe signature" means the signing secret does not match.
 
